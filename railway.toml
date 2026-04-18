@@ -1,2 +1,5 @@
 [build]
 builder="heroku"
+
+[deploy]
+startCommand="java -jar target/*.jar"
