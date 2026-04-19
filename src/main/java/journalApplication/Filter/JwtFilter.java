@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter
-{
+public class JwtFilter extends OncePerRequestFilter {
+
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -26,28 +26,43 @@ public class JwtFilter extends OncePerRequestFilter
     private JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException
-    {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/journal/public")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer "))
-        {
-            jwt= authHeader.substring(7);
-            username=jwtUtil.extractUsername(jwt);
-        }
-        if (username != null)
-        {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if(jwtUtil.validateToken(jwt))
-            {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                jwt = authHeader.substring(7);
+                username = jwtUtil.extractUsername(jwt);
             }
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                if (jwtUtil.validateToken(jwt)) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    response.addHeader("admin", "Mohammad");
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("JWT Filter Error: " + e.getMessage());
         }
-        response.addHeader("admin","Mohammad");
+        
         chain.doFilter(request, response);
     }
 }
