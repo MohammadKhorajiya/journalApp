@@ -33,7 +33,7 @@ public class UserController {
       return userService.getAll();
     }
 
-    @PutMapping
+    @PutMapping("/update-profile")
     public ResponseEntity<?> updateUser(@RequestBody User user)
     {
        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
