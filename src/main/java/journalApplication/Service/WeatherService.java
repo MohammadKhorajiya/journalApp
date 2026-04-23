@@ -36,14 +36,20 @@ public class WeatherService
             return weatherResponse;
         }
         else {
-            String finalAPI = appCache.appCache.get(AppCache.keys.WEATHER_API.toString()).replace("CITY", city).replace("API_KEY", apikey);
-            ResponseEntity<WeatherResponse> response = restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
-            WeatherResponse body = response.getBody();
-            if(body!=null)
-            {
-                redisService.set("weather_of_"+ city,body,300l);
+            try {
+                String finalAPI = appCache.appCache.get(AppCache.keys.WEATHER_API.toString()).replace("CITY", city).replace("API_KEY", apikey);
+                ResponseEntity<WeatherResponse> response = restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
+                WeatherResponse body = response.getBody();
+                if (body != null) {
+                    redisService.set("weather_of_" + city, body, 300l);
+                }
+                return body;
             }
-            return body;
+            catch (Exception e)
+            {
+                System.out.println("Exception while fetching weather: "+e.getMessage());
+                return null;
+            }
         }
     }
 }
