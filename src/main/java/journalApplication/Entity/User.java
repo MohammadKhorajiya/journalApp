@@ -23,7 +23,7 @@ public class User
     @NonNull
     private String username;
     private String email;
-    private boolean sentimentAnalisys;
+    private boolean sentimentAnalysis;
     private String city;
     @NonNull
     private String password;
