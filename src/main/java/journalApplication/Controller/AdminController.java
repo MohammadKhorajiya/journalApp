@@ -32,9 +32,10 @@ public class AdminController
     }
 
     @PostMapping("/create-admin-user")
-    public void Createuser(@RequestBody User user)
+    public ResponseEntity<?> Createuser(@RequestBody User user)
     {
         userService.saveAdmin(user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @GetMapping("/clear-app-cache")
