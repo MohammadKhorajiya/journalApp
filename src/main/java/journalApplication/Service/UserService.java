@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -41,17 +42,24 @@ public class UserService
     }
   }
 
-  public void saveAdmin(User user)
-  {
+  public void saveAdmin(User user) {
     User userInDb = userRepository.findByUsername(user.getUsername());
     if (userInDb != null) {
+      if (userInDb.getRole() == null) {
+        userInDb.setRole(new ArrayList<>());
+      }
       if (!userInDb.getRole().contains("ADMIN")) {
         userInDb.getRole().add("ADMIN");
       }
-    }
-    else {
+      userRepository.save(userInDb);
+      user.setId(userInDb.getId());
+      user.setEmail(userInDb.getEmail());
+      user.setCity(userInDb.getCity());
+      user.setSentimentAnalysis(userInDb.isSentimentAnalysis());
+      user.setRole(userInDb.getRole());
+    } else {
       user.setPassword(passwordEncoder.encode(user.getPassword()));
-      user.setRole(Arrays.asList("USER","ADMIN"));
+      user.setRole(Arrays.asList("USER", "ADMIN"));
       userRepository.save(user);
     }
   }
