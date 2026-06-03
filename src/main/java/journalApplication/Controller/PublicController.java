@@ -31,7 +31,7 @@ public class PublicController {
     @GetMapping("/health-check")
     public String healthCheck() {
         log.info("Health is ok..!");
-        return "Health is ok";
+        return "JournalApp Server is Up and Running";
     }
 
     @PostMapping("/signup")
