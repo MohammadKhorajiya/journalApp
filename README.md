@@ -31,3 +31,6 @@ A production-ready Backend application built with **Spring Boot**, designed to h
 * **Security:** Spring Security & JWT
 * **Database:** MongoDB (Cloud Atlas)
 * **Cloud Deployment:** Render
+
+---
+*Developed by MohammadKhorajiya*
